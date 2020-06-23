@@ -1,6 +1,6 @@
 <?php
 
-namespace StainMaster\App\Tasks;
+namespace Sunnysideup\App\Tasks;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
