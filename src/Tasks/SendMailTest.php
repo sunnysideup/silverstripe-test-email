@@ -1,13 +1,14 @@
 <?php
 
-namespace StainMaster\App\Tasks;
+namespace Sunnysideup\EmailTest\Tasks;
+
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
 
 class SendEmailTest extends BuildTask
 {
-    private static $segment = 'sendmail';
+    private static $segment = 'testemail';
 
     protected $title = 'Test if emails are working';
 
