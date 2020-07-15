@@ -2,9 +2,9 @@
 
 namespace Sunnysideup\EmailTest\Tasks;
 
-use SilverStripe\Core\Convert;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
+use SilverStripe\Core\Convert;
 use SilverStripe\Dev\BuildTask;
 
 class SendMailTest extends BuildTask
@@ -25,10 +25,10 @@ class SendMailTest extends BuildTask
                 input {width: 80vw; max-width: 500px; padding: 5px;}
             </style>
             <form action="" method="get">
-                from: <br/><input name="from" value="'.Convert::raw2att($from).'" /><br/><br/>
-                to: <br/><input name="to" value="'.Convert::raw2att($to).'" /><br/><br/>
-                subject: <br/><input name="subject" value="'.Convert::raw2att($subject).'" /><br/><br/>
-                message: <br/><input name="message" value="'.Convert::raw2att($message).'" /><br/><br/>
+                from: <br/><input name="from" value="' . Convert::raw2att($from) . '" /><br/><br/>
+                to: <br/><input name="to" value="' . Convert::raw2att($to) . '" /><br/><br/>
+                subject: <br/><input name="subject" value="' . Convert::raw2att($subject) . '" /><br/><br/>
+                message: <br/><input name="message" value="' . Convert::raw2att($message) . '" /><br/><br/>
                 <input type="submit" />
             </form>
             <h1>Outcome</h1>
