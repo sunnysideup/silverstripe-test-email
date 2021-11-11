@@ -15,10 +15,10 @@ class SendMailTest extends BuildTask
 
     public function run($request)
     {
-        $from = $request->getVar('from') ?? 'webmaster@' . Director::host();
-        $to = $request->getVar('to') ?? 'support@' . Director::host();
-        $subject = $request->getVar('subject') ?? 'testing email';
-        $message = $request->getVar('message') ?? 'Message goes here';
+        $from = $request->getVar('from') ?: 'webmaster@' . Director::host();
+        $to = $request->getVar('to') ?: 'support@' . Director::host();
+        $subject = $request->getVar('subject') ?: 'testing email';
+        $message = $request->getVar('message') ?: 'Message goes here';
 
         echo '
             <style>
@@ -32,7 +32,7 @@ class SendMailTest extends BuildTask
                 <input type="submit" />
             </form>
         ';
-        if(isset($_GET['from'])) {
+        if(isset($request->getVar('from'))) {
             echo '<h1>Outcome</h1>';
             $outcome = mail($to, $subject, $message);
             echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
