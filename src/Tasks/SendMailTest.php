@@ -32,7 +32,7 @@ class SendMailTest extends BuildTask
                 <input type="submit" />
             </form>
         ';
-        if(isset($request->getVar('from'))) {
+        if($request->getVar('from')) {
             echo '<h1>Outcome</h1>';
             $outcome = mail($to, $subject, $message);
             echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
