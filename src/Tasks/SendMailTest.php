@@ -56,9 +56,9 @@ Outcome
             } else {
                 echo '<h1>Outcome</h1>';
             }
-            $outcome = mail($to, $subject, $message);
+            $outcome = mail($to, $subject . ' raw mail', $message);
             echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
-            $email = new Email($from, $to, $subject, $message);
+            $email = new Email($from, $to, $subject . ' silverstripe message', $message);
             $outcome = $email->sendPlain();
             echo 'Silverstripe e-mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
         }
