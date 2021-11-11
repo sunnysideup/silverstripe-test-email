@@ -15,10 +15,10 @@ class SendMailTest extends BuildTask
 
     public function run($request)
     {
-        $from = $_GET['from'] ?? 'webmaster@' . Director::host();
-        $to = $_GET['to'] ?? 'support@' . Director::host();
-        $subject = $_GET['subject'] ?? 'testing email';
-        $message = $_GET['message'] ?? 'Message goes here';
+        $from = $request->getVar('from') ?? 'webmaster@' . Director::host();
+        $to = $request->getVar('to') ?? 'support@' . Director::host();
+        $subject = $request->getVar('subject') ?? 'testing email';
+        $message = $request->getVar('message') ?? 'Message goes here';
 
         echo '
             <style>
@@ -31,14 +31,15 @@ class SendMailTest extends BuildTask
                 message: <br/><input name="message" value="' . Convert::raw2att($message) . '" /><br/><br/>
                 <input type="submit" />
             </form>
-            <h1>Outcome</h1>
-
         ';
-        $outcome = mail($to, $subject, $message);
-        echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
-        $email = new Email($from, $to, $subject, $message);
-        $outcome = $email->sendPlain();
-        echo 'Silverstripe e-mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
+        if(isset($_GET['from'])) {
+            echo '<h1>Outcome</h1>';
+            $outcome = mail($to, $subject, $message);
+            echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
+            $email = new Email($from, $to, $subject, $message);
+            $outcome = $email->sendPlain();
+            echo 'Silverstripe e-mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
+        }
     }
 
     protected function newLine()
