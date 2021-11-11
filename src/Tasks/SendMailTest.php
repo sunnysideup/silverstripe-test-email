@@ -22,15 +22,15 @@ class SendMailTest extends BuildTask
         if (Director::is_cli()) {
             echo '
 
-                    from: ' . Convert::raw2att($from) . '
-                    
-                    to: ' . Convert::raw2att($to) . '
-                    
-                    subject:' . Convert::raw2att($subject) . '" /><br/><br/>
-                    
-                    message: ' . Convert::raw2att($message) . '
-                    
-                    Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subject=test message=hello
+from: ' . Convert::raw2att($from) . '
+
+to: ' . Convert::raw2att($to) . '
+
+subject:' . Convert::raw2att($subject) . '" /><br/><br/>
+
+message: ' . Convert::raw2att($message) . '
+
+Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subject=test message=hello
             ';            
         } else {
             echo '
@@ -47,7 +47,15 @@ class SendMailTest extends BuildTask
             ';
         }
         if($request->getVar('from')) {
-            echo '<h1>Outcome</h1>';
+            if (Director::is_cli()) {
+                echo '
+==========================
+Outcome
+==========================
+                ';
+            } else {
+                echo '<h1>Outcome</h1>';
+            }
             $outcome = mail($to, $subject, $message);
             echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
             $email = new Email($from, $to, $subject, $message);
