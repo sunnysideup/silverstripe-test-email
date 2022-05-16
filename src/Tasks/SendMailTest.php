@@ -5,6 +5,12 @@ namespace Sunnysideup\EmailTest\Tasks;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Convert;
+
+use SilverStripe\Core\Config\Config;
+
+use SilverStripe\Core\Kernel;
+
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\BuildTask;
 
 class SendMailTest extends BuildTask
@@ -15,8 +21,11 @@ class SendMailTest extends BuildTask
 
     public function run($request)
     {
-        $from = $request->getVar('from') ?: 'webmaster@' . Director::host();
-        $to = $request->getVar('to') ?: 'support@' . Director::host();
+        /** @var Kernel $kernel */
+        $kernel = Injector::inst()->get(Kernel::class);
+        $kernel->setEnvironment('dev');
+        $from = $request->getVar('from') ?: Config::inst()->get(Email::class, 'admin_email');
+        $to = $request->getVar('to') ?: Config::inst()->get(Email::class, 'admin_email');
         $subject = $request->getVar('subject') ?: 'testing email';
         $message = $request->getVar('message') ?: 'Message goes here';
         if (Director::is_cli()) {
@@ -31,7 +40,7 @@ subject:' . Convert::raw2att($subject) . '" /><br/><br/>
 message: ' . Convert::raw2att($message) . '
 
 Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subject=test message=hello
-            ';            
+            ';
         } else {
             echo '
                 <style>
