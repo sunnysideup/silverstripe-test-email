@@ -5,6 +5,8 @@ namespace Sunnysideup\EmailTest\Tasks;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Convert;
+
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\BuildTask;
 
 class SendMailTest extends BuildTask
@@ -15,8 +17,13 @@ class SendMailTest extends BuildTask
 
     public function run($request)
     {
-        $from = $request->getVar('from') ?: 'webmaster@' . Director::host();
-        $to = $request->getVar('to') ?: 'support@' . Director::host();
+        $adminEmail = Config::inst()->get(Email::class, 'admin_email');
+        if(is_array($adminEmail)) {
+            $keys = array_keys($adminEmail);
+            $adminEmail = array_pop($keys);
+        }
+        $from = $request->getVar('from') ?: $adminEmail  ;
+        $to = $request->getVar('to') ?: $adminEmail;
         $subject = $request->getVar('subject') ?: 'testing email';
         $message = $request->getVar('message') ?: 'Message goes here';
         if (Director::is_cli()) {
@@ -31,7 +38,7 @@ subject:' . Convert::raw2att($subject) . '" /><br/><br/>
 message: ' . Convert::raw2att($message) . '
 
 Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subject=test message=hello
-            ';            
+            ';
         } else {
             echo '
                 <style>
@@ -46,22 +53,20 @@ Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subjec
                 </form>
             ';
         }
-        if($request->getVar('from')) {
-            if (Director::is_cli()) {
-                echo '
+        if (Director::is_cli()) {
+            echo '
 ==========================
 Outcome
 ==========================
-                ';
-            } else {
-                echo '<h1>Outcome</h1>';
-            }
-            $outcome = mail($to, $subject . ' raw mail', $message);
-            echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
-            $email = new Email($from, $to, $subject . ' silverstripe message', $message);
-            $outcome = $email->sendPlain();
-            echo 'Silverstripe e-mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
+            ';
+        } else {
+            echo '<h1>Outcome</h1>';
         }
+        $outcome = mail($to, $subject . ' raw mail', $message);
+        echo 'PHP mail sent: ' . ($outcome ? 'SENT' : 'FAILED') . $this->newLine();
+        $email = new Email($from, $to, $subject . ' silverstripe message', $message);
+        $outcome = $email->sendPlain();
+        echo 'Silverstripe e-mail sent: ' . ($outcome ? 'SENT' : 'FAILED') . $this->newLine();
     }
 
     protected function newLine()
