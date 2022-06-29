@@ -4,15 +4,16 @@ namespace Sunnysideup\EmailTest\Tasks;
 
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
-use SilverStripe\Core\Convert;
-
 use SilverStripe\Core\Config\Config;
-
-use SilverStripe\Core\Kernel;
-
+use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Kernel;
 use SilverStripe\Dev\BuildTask;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class SendMailTest extends BuildTask
 {
     protected $title = 'Test if emails are working';
@@ -24,15 +25,17 @@ class SendMailTest extends BuildTask
         /** @var Kernel $kernel */
         $kernel = Injector::inst()->get(Kernel::class);
         $kernel->setEnvironment('dev');
+
         $from = $request->getVar('from') ?: Config::inst()->get(Email::class, 'admin_email');
         $to = $request->getVar('to') ?: Config::inst()->get(Email::class, 'admin_email');
         $adminEmail = Config::inst()->get(Email::class, 'admin_email');
-        if(is_array($adminEmail)) {
+        if (is_array($adminEmail)) {
             $keys = array_keys($adminEmail);
             $adminEmail = array_pop($keys);
         }
-        $from = $request->getVar('from') ?: $adminEmail  ;
-        $to = $request->getVar('to') ?: $adminEmail;        
+
+        $from = $request->getVar('from') ?: $adminEmail;
+        $to = $request->getVar('to') ?: $adminEmail;
         $subject = $request->getVar('subject') ?: 'testing email';
         $message = $request->getVar('message') ?: 'Message goes here';
         if (Director::is_cli()) {
@@ -62,7 +65,8 @@ Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subjec
                 </form>
             ';
         }
-        if($request->getVar('from')) {
+
+        if ($request->getVar('from')) {
             if (Director::is_cli()) {
                 echo '
 ==========================
@@ -72,6 +76,7 @@ Outcome
             } else {
                 echo '<h1>Outcome</h1>';
             }
+
             $outcome = mail($to, $subject . ' raw mail', $message);
             echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
             $email = new Email($from, $to, $subject . ' silverstripe message', $message);
@@ -87,6 +92,7 @@ Outcome
 
             ';
         }
+
         return '<br /><br />';
     }
 }
