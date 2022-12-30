@@ -4,14 +4,10 @@ namespace Sunnysideup\EmailTest\Tasks;
 
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
-<<<<<<< HEAD
-use SilverStripe\Core\Convert;
-=======
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Kernel;
->>>>>>> 961d9613637fef740849ea7f33eb6ae7dd431541
 use SilverStripe\Dev\BuildTask;
 
 /**
@@ -26,32 +22,32 @@ class SendMailTest extends BuildTask
 
     public function run($request)
     {
-<<<<<<< HEAD
-        $from = $_GET['from'] ?? 'webmaster@' . Director::host();
-        $to = $_GET['to'] ?? 'support@' . Director::host();
-        $subject = $_GET['subject'] ?? 'testing email';
-        $message = $_GET['message'] ?? 'Message goes here';
-
-        echo '
-            <style>
-                input {width: 80vw; max-width: 500px; padding: 5px;}
-            </style>
-            <form action="" method="get">
-                from: <br/><input name="from" value="' . Convert::raw2att($from) . '" /><br/><br/>
-                to: <br/><input name="to" value="' . Convert::raw2att($to) . '" /><br/><br/>
-                subject: <br/><input name="subject" value="' . Convert::raw2att($subject) . '" /><br/><br/>
-                message: <br/><input name="message" value="' . Convert::raw2att($message) . '" /><br/><br/>
-                <input type="submit" />
-            </form>
-            <h1>Outcome</h1>
-
-        ';
-        $outcome = mail($to, $subject, $message);
-        echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
-        $email = new Email($from, $to, $subject, $message);
-        $outcome = $email->sendPlain();
-        echo 'Silverstripe e-mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
-=======
+// <<<<<<< HEAD
+//         $from = $_GET['from'] ?? 'webmaster@' . Director::host();
+//         $to = $_GET['to'] ?? 'support@' . Director::host();
+//         $subject = $_GET['subject'] ?? 'testing email';
+//         $message = $_GET['message'] ?? 'Message goes here';
+//
+//         echo '
+//             <style>
+//                 input {width: 80vw; max-width: 500px; padding: 5px;}
+//             </style>
+//             <form action="" method="get">
+//                 from: <br/><input name="from" value="' . Convert::raw2att($from) . '" /><br/><br/>
+//                 to: <br/><input name="to" value="' . Convert::raw2att($to) . '" /><br/><br/>
+//                 subject: <br/><input name="subject" value="' . Convert::raw2att($subject) . '" /><br/><br/>
+//                 message: <br/><input name="message" value="' . Convert::raw2att($message) . '" /><br/><br/>
+//                 <input type="submit" />
+//             </form>
+//             <h1>Outcome</h1>
+//
+//         ';
+//         $outcome = mail($to, $subject, $message);
+//         echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
+//         $email = new Email($from, $to, $subject, $message);
+//         $outcome = $email->sendPlain();
+//         echo 'Silverstripe e-mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
+// =======
         /** @var Kernel $kernel */
         $kernel = Injector::inst()->get(Kernel::class);
         $kernel->setEnvironment('dev');
@@ -113,7 +109,6 @@ Outcome
             $outcome = $email->sendPlain();
             echo 'Silverstripe e-mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
         }
->>>>>>> 961d9613637fef740849ea7f33eb6ae7dd431541
     }
 
     protected function newLine()
