@@ -52,8 +52,6 @@ class SendMailTest extends BuildTask
         $kernel = Injector::inst()->get(Kernel::class);
         $kernel->setEnvironment('dev');
 
-        $from = $request->getVar('from') ?: Config::inst()->get(Email::class, 'admin_email');
-        $to = $request->getVar('to') ?: Config::inst()->get(Email::class, 'admin_email');
         $adminEmail = Config::inst()->get(Email::class, 'admin_email');
         if (is_array($adminEmail)) {
             $keys = array_keys($adminEmail);
@@ -67,13 +65,13 @@ class SendMailTest extends BuildTask
         if (Director::is_cli()) {
             echo '
 
-from: ' . Convert::raw2att($from) . '
+from: ' . (string) Convert::raw2att($from) . '
 
-to: ' . Convert::raw2att($to) . '
+to: ' . (string) Convert::raw2att($to) . '
 
-subject:' . Convert::raw2att($subject) . '" /><br/><br/>
+subject:' . (string) Convert::raw2att($subject) . '" /><br/><br/>
 
-message: ' . Convert::raw2att($message) . '
+message: ' . (string) Convert::raw2att($message) . '
 
 Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subject=test message=hello
             ';
