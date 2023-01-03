@@ -22,7 +22,7 @@ class SendMailTest extends BuildTask
 
     public function run($request)
     {
-// <<<<<<< HEAD
+        // <<<<<<< HEAD
 //         $from = $_GET['from'] ?? 'webmaster@' . Director::host();
 //         $to = $_GET['to'] ?? 'support@' . Director::host();
 //         $subject = $_GET['subject'] ?? 'testing email';
@@ -47,7 +47,7 @@ class SendMailTest extends BuildTask
 //         $email = new Email($from, $to, $subject, $message);
 //         $outcome = $email->sendPlain();
 //         echo 'Silverstripe e-mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
-// =======
+        // =======
         /** @var Kernel $kernel */
         $kernel = Injector::inst()->get(Kernel::class);
         $kernel->setEnvironment('dev');
