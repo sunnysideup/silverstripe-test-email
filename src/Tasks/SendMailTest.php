@@ -103,11 +103,12 @@ Outcome
 
             $outcome = mail($to, $subject . ' raw mail', $message);
             echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
+
             try {
                 $email = new Email($from, $to, $subject . ' silverstripe message', $message);
                 $outcome = $email->sendPlain();
-            } catch(\Exception $e) {
-                die('<div>Mail send error: <span style="color:red">'.$e->getMessage().'</span></div>');
+            } catch (\Exception $e) {
+                die('<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>');
             }
             echo 'Silverstripe e-mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
         }
