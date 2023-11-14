@@ -76,7 +76,7 @@ Outcome
             }
 
             $outcome = mail($to, $subject . ' raw mail', $message);
-            echo 'PHP mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
+            echo 'PHP mail sent: ' . (! $outcome ? 'CHECK EMAIL TO VERIFY' : 'NO') . $this->newLine();
 
             try {
                 $email = new Email($from, $to, $subject . ' silverstripe message', $message);
@@ -84,7 +84,7 @@ Outcome
             } catch (\Exception $e) {
                 die('<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>');
             }
-            echo 'Silverstripe e-mail sent: ' . ($outcome ? 'YES' : 'NO') . $this->newLine();
+            echo 'Silverstripe e-mail sent: ' . (! $outcome ? 'CHECK EMAIL TO VERIFY' : 'NO') . $this->newLine();
         }
     }
 
