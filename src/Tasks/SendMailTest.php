@@ -39,13 +39,13 @@ class SendMailTest extends BuildTask
         if (Director::is_cli()) {
             echo '
 
-from: ' . (string) Convert::raw2att($from) . '
+from: ' . Convert::raw2att($from) . '
 
-to: ' . (string) Convert::raw2att($to) . '
+to: ' . Convert::raw2att($to) . '
 
-subject:' . (string) Convert::raw2att($subject) . '" /><br/><br/>
+subject:' . Convert::raw2att($subject) . '" /><br/><br/>
 
-message: ' . (string) Convert::raw2att($message) . '
+message: ' . Convert::raw2att($message) . '
 
 Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subject=test message=hello
             ';
@@ -76,7 +76,7 @@ Outcome
             }
 
             $outcome = mail($to, $subject . ' raw mail', $message);
-            echo 'PHP mail sent: ' . (! $outcome ? 'CHECK EMAIL TO VERIFY' : 'NO') . $this->newLine();
+            echo 'PHP mail sent: ' . ($outcome ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
 
             try {
                 $email = new Email($from, $to, $subject . ' silverstripe message', $message);
@@ -84,7 +84,7 @@ Outcome
             } catch (\Exception $e) {
                 die('<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>');
             }
-            echo 'Silverstripe e-mail sent: ' . (! $outcome ? 'CHECK EMAIL TO VERIFY' : 'NO') . $this->newLine();
+            echo 'Silverstripe e-mail sent: ' . ($outcome ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
         }
     }
 
