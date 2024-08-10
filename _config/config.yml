@@ -6,3 +6,25 @@ SilverStripe\Core\Injector\Injector:
   Symfony\Component\Mailer\Transport\TransportInterface:
     constructor:
       dsn: 'sendmail://default?command=/usr/sbin/sendmail%20-oi%20-t'
+---
+Name: test-email
+After: 'mailer'
+Only:
+  environment: 'dev'
+---
+SilverStripe\Core\Injector\Injector:
+  Symfony\Component\Mailer\MailerInterface:
+    class: Sunnysideup\EmailTest\DummyMailer
+# SilverStripe\Core\Injector\Injector:
+#   Symfony\Component\Mailer\MailerInterface:
+#     constructor:
+#       transport: '%$Symfony\Component\Mailer\Transport\TransportInterface'
+#   Symfony\Component\EventDispatcher\EventDispatcherInterface.mailer:
+#     class: Symfony\Component\EventDispatcher\EventDispatcher
+#     calls:
+#       - [addSubscriber, ['%$SilverStripe\Control\Email\MailerSubscriber']]
+#   Symfony\Component\Mailer\Transport\TransportInterface:
+#     factory: SilverStripe\Control\Email\TransportFactory
+#     constructor:
+#       dsn: 'sendmail://default'
+#       dispatcher: '%$Symfony\Component\EventDispatcher\EventDispatcherInterface.mailer'
