@@ -9,6 +9,7 @@ use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Kernel;
 use SilverStripe\Dev\BuildTask;
+use Symfony\Component\Mailer\MailerInterface;
 
 /**
  * @internal
@@ -32,10 +33,11 @@ class SendMailTest extends BuildTask
             $adminEmail = array_pop($keys);
         }
 
-        $from = $request->getVar('from') ?: $adminEmail;
-        $to = $request->getVar('to') ?: $adminEmail;
-        $subject = $request->getVar('subject') ?: 'testing email';
-        $message = $request->getVar('message') ?: 'Message goes here';
+        $from = $request->requestVar('from') ?: $adminEmail;
+        $to = $request->requestVar('to') ?: $adminEmail;
+        $subject = $request->requestVar('subject') ?: 'testing email';
+        $message = $request->requestVar('message') ?: 'Message goes here';
+        $mailProvider = Injector::inst()->get(MailerInterface::class);
         if (Director::is_cli()) {
             echo '
 
@@ -54,7 +56,7 @@ Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subjec
                 <style>
                     input {width: 80vw; max-width: 500px; padding: 5px;}
                 </style>
-                <form action="" method="get">
+                <form action="" method="'.$this->formMethod().'">
                     from: <br/><input name="from" value="' . Convert::raw2att($from) . '" /><br/><br/>
                     to: <br/><input name="to" value="' . Convert::raw2att($to) . '" /><br/><br/>
                     subject: <br/><input name="subject" value="' . Convert::raw2att($subject) . '" /><br/><br/>
@@ -64,7 +66,7 @@ Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subjec
             ';
         }
 
-        if ($request->getVar('from')) {
+        if ($request->requestVar('from')) {
             if (Director::is_cli()) {
                 echo '
 ==========================
@@ -85,10 +87,11 @@ Outcome
                 die('<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>');
             }
             echo 'Silverstripe e-mail sent: ' . ($outcome ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
+            echo 'Mail Service Provider: ' . get_class($mailProvider) . $this->newLine();
         }
     }
 
-    protected function newLine()
+    protected function newLine(): string
     {
         if (Director::is_cli()) {
             return '
@@ -97,5 +100,14 @@ Outcome
         }
 
         return '<br /><br />';
+    }
+
+    protected function formMethod(): string
+    {
+        if (Director::is_cli()) {
+            return 'get';
+        }
+
+        return 'post';
     }
 }
