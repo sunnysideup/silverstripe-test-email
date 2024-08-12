@@ -7,8 +7,8 @@ SilverStripe\Core\Injector\Injector:
     constructor:
       dsn: 'sendmail://default?command=/usr/sbin/sendmail%20-oi%20-t'
 ---
-Name: test-email
-After: 'mailer'
+Name: test-email-dev
+After: 'test-email'
 Only:
   environment: 'dev'
 ---
