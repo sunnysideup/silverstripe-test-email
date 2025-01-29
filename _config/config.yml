@@ -1,6 +1,9 @@
 ---
 Name: test-email
 After: 'mailer'
+Only:
+  envvarset:
+    - 'SS_HOSTED_WITH_SITEHOST'
 ---
 SilverStripe\Core\Injector\Injector:
   Symfony\Component\Mailer\Transport\TransportInterface:
@@ -15,6 +18,8 @@ Only:
 SilverStripe\Core\Injector\Injector:
   Symfony\Component\Mailer\MailerInterface:
     class: Sunnysideup\EmailTest\DummyMailer
+
+
 # SilverStripe\Core\Injector\Injector:
 #   Symfony\Component\Mailer\MailerInterface:
 #     constructor:
