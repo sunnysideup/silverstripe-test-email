@@ -56,7 +56,7 @@ Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subjec
                 <style>
                     input {width: 80vw; max-width: 500px; padding: 5px;}
                 </style>
-                <form action="" method="'.$this->formMethod().'">
+                <form action="" method="' . $this->formMethod() . '">
                     from: <br/><input name="from" value="' . Convert::raw2att($from) . '" /><br/><br/>
                     to: <br/><input name="to" value="' . Convert::raw2att($to) . '" /><br/><br/>
                     subject: <br/><input name="subject" value="' . Convert::raw2att($subject) . '" /><br/><br/>
@@ -82,7 +82,8 @@ Outcome
 
             try {
                 $email = new Email($from, $to, $subject . ' silverstripe message', $message);
-                $outcome = $email->sendPlain();
+                $email->sendPlain();
+                $outcome = true;
             } catch (\Exception $e) {
                 die('<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>');
             }
