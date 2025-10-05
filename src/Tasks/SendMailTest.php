@@ -85,10 +85,23 @@ Outcome
                 $email->sendPlain();
                 $outcome = true;
             } catch (\Exception $e) {
-                die('<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>');
+                $outcome = false;
+                echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>'. $this->newLine();
             }
-            echo 'Silverstripe e-mail sent: ' . ($outcome ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
+            echo 'Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
             echo 'Mail Service Provider: ' . get_class($mailProvider) . $this->newLine();
+            echo '<h2>Attempt #2</h2>';
+            $email = Email::create($from, $to, $subject);
+            $email->text('My plain text email content');
+            try {
+                $email->send();
+                $outcome = true;
+            } catch (TransportExceptionInterface $e) {
+                $outcome = false;
+                echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>'. $this->newLine();
+            }     
+            echo 'Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
+            echo 'Mail Service Provider: ' . get_class($mailProvider) . $this->newLine();            
         }
     }
 
