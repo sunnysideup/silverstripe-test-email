@@ -9,6 +9,7 @@ use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Kernel;
 use SilverStripe\Dev\BuildTask;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 
 /**
@@ -86,7 +87,7 @@ Outcome
                 $outcome = true;
             } catch (\Exception $e) {
                 $outcome = false;
-                echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>'. $this->newLine();
+                echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>' . $this->newLine();
             }
             echo 'Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
             echo 'Mail Service Provider: ' . get_class($mailProvider) . $this->newLine();
@@ -98,10 +99,10 @@ Outcome
                 $outcome = true;
             } catch (TransportExceptionInterface $e) {
                 $outcome = false;
-                echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>'. $this->newLine();
-            }     
+                echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>' . $this->newLine();
+            }
             echo 'Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
-            echo 'Mail Service Provider: ' . get_class($mailProvider) . $this->newLine();            
+            echo 'Mail Service Provider: ' . get_class($mailProvider) . $this->newLine();
         }
     }
 
