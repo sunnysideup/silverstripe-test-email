@@ -16,5 +16,4 @@ class DummyMailer implements MailerInterface
     {
         // do nothing
     }
-
 }
