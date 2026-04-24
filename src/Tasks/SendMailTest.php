@@ -2,10 +2,11 @@
 
 namespace Sunnysideup\EmailTest\Tasks;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use SilverStripe\Console\PolyOutput;
 use Exception;
-use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Convert;
@@ -25,6 +26,16 @@ class SendMailTest extends BuildTask
 
     protected static string $commandName = 'testemail';
 
+    public function getOptions(): array
+    {
+        return [
+            new InputOption('from', 'f', InputOption::VALUE_OPTIONAL, 'From email address'),
+            new InputOption('to', 't', InputOption::VALUE_OPTIONAL, 'To email address'),
+            new InputOption('subject', 's', InputOption::VALUE_OPTIONAL, 'Email subject', 'testing email'),
+            new InputOption('message', 'm', InputOption::VALUE_OPTIONAL, 'Email message body', 'Message goes here'),
+        ];
+    }
+
     protected function execute(InputInterface $input, PolyOutput $output): int
     {
         /** @var Kernel $kernel */
@@ -37,99 +48,55 @@ class SendMailTest extends BuildTask
             $adminEmail = array_pop($keys);
         }
 
-        $from = $request->requestVar('from') ?: $adminEmail;
-        $to = $request->requestVar('to') ?: $adminEmail;
-        $subject = $request->requestVar('subject') ?: 'testing email';
-        $message = $request->requestVar('message') ?: 'Message goes here';
+        $from    = $input->getOption('from')    ?: $adminEmail;
+        $to      = $input->getOption('to')      ?: $adminEmail;
+        $subject = $input->getOption('subject') ?: 'testing email';
+        $message = $input->getOption('message') ?: 'Message goes here';
+
         $mailProvider = Injector::inst()->get(MailerInterface::class);
-        if (Director::is_cli()) {
-            echo '
 
-from: ' . Convert::raw2att($from) . '
+        $output->writeln('from: ' . Convert::raw2att((string) $from));
+        $output->writeln('to: ' . Convert::raw2att((string) $to));
+        $output->writeln('subject: ' . Convert::raw2att((string) $subject));
+        $output->writeln('message: ' . Convert::raw2att((string) $message));
+        $output->writeln('Change values like this: sake dev/tasks/testemail --to=a@b.com --from=c@d.com --subject=test --message=hello');
 
-to: ' . Convert::raw2att($to) . '
+        $output->writeln('==========================');
+        $output->writeln('Outcome');
+        $output->writeln('==========================');
 
-subject:' . Convert::raw2att($subject) . '" /><br/><br/>
+        // Attempt 1: raw PHP mail()
+        $outcome = mail((string) $to, $subject . ' raw mail', (string) $message);
+        $output->writeln('PHP mail sent: ' . ($outcome ? 'NO' : 'CHECK EMAIL TO VERIFY'));
 
-message: ' . Convert::raw2att($message) . '
-
-Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subject=test message=hello
-            ';
-        } else {
-            echo '
-                <style>
-                    input {width: 80vw; max-width: 500px; padding: 5px;}
-                </style>
-                <form action="" method="' . $this->formMethod() . '">
-                    from: <br/><input name="from" value="' . Convert::raw2att($from) . '" /><br/><br/>
-                    to: <br/><input name="to" value="' . Convert::raw2att($to) . '" /><br/><br/>
-                    subject: <br/><input name="subject" value="' . Convert::raw2att($subject) . '" /><br/><br/>
-                    message: <br/><input name="message" value="' . Convert::raw2att($message) . '" /><br/><br/>
-                    <input type="submit" />
-                </form>
-            ';
+        // Attempt 2: SilverStripe sendPlain()
+        try {
+            $email = Email::create($from, $to, $subject . ' silverstripe message', $message);
+            $email->sendPlain();
+            $outcome = true;
+        } catch (Exception $e) {
+            $outcome = false;
+            $output->writeForHtml('<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>');
         }
 
-        if ($request->requestVar('from')) {
-            if (Director::is_cli()) {
-                echo '
-==========================
-Outcome
-==========================
-                ';
-            } else {
-                echo '<h1>Outcome</h1>';
-            }
+        $output->writeln('Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY'));
+        $output->writeln('Mail Service Provider: ' . $mailProvider::class);
 
-            $outcome = mail((string) $to, $subject . ' raw mail', (string) $message);
-            echo 'PHP mail sent: ' . ($outcome ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
-
-            try {
-                $email = Email::create($from, $to, $subject . ' silverstripe message', $message);
-                $email->sendPlain();
-                $outcome = true;
-            } catch (Exception $e) {
-                $outcome = false;
-                echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>' . $this->newLine();
-            }
-
-            echo 'Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
-            echo 'Mail Service Provider: ' . $mailProvider::class . $this->newLine();
-            echo '<h2>Attempt #2</h2>';
-            $email = Email::create($from, $to, $subject);
-            $email->text('My plain text email content');
-            try {
-                $email->send();
-                $outcome = true;
-            } catch (TransportExceptionInterface $e) {
-                $outcome = false;
-                echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>' . $this->newLine();
-            }
-
-            echo 'Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
-            echo 'Mail Service Provider: ' . $mailProvider::class . $this->newLine();
+        // Attempt 3: SilverStripe send() with text()
+        $output->writeln('Attempt #2');
+        $email = Email::create($from, $to, $subject);
+        $email->text('My plain text email content');
+        try {
+            $email->send();
+            $outcome = true;
+        } catch (TransportExceptionInterface $e) {
+            $outcome = false;
+            $output->writeForHtml('<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>');
         }
 
-        return 0;
-    }
+        $output->writeln('Silverstripe e-mail #2 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY'));
+        $output->writeln('Mail Service Provider: ' . $mailProvider::class);
 
-    protected function newLine(): string
-    {
-        if (Director::is_cli()) {
-            return '
-
-            ';
-        }
-
-        return '<br /><br />';
-    }
-
-    protected function formMethod(): string
-    {
-        if (Director::is_cli()) {
-            return 'get';
-        }
-
-        return 'post';
+        return Command::SUCCESS;
     }
 }
