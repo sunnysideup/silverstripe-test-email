@@ -2,6 +2,9 @@
 
 namespace Sunnysideup\EmailTest\Tasks;
 
+use Symfony\Component\Console\Input\InputInterface;
+use SilverStripe\Console\PolyOutput;
+use Exception;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Config\Config;
@@ -18,11 +21,11 @@ use Symfony\Component\Mailer\MailerInterface;
  */
 class SendMailTest extends BuildTask
 {
-    protected $title = 'Test if emails are working';
+    protected string $title = 'Test if emails are working';
 
-    private static $segment = 'testemail';
+    protected static string $commandName = 'testemail';
 
-    public function run($request)
+    protected function execute(InputInterface $input, PolyOutput $output): int
     {
         /** @var Kernel $kernel */
         $kernel = Injector::inst()->get(Kernel::class);
@@ -78,19 +81,20 @@ Outcome
                 echo '<h1>Outcome</h1>';
             }
 
-            $outcome = mail($to, $subject . ' raw mail', $message);
+            $outcome = mail((string) $to, $subject . ' raw mail', (string) $message);
             echo 'PHP mail sent: ' . ($outcome ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
 
             try {
-                $email = new Email($from, $to, $subject . ' silverstripe message', $message);
+                $email = Email::create($from, $to, $subject . ' silverstripe message', $message);
                 $email->sendPlain();
                 $outcome = true;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $outcome = false;
                 echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>' . $this->newLine();
             }
+
             echo 'Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
-            echo 'Mail Service Provider: ' . get_class($mailProvider) . $this->newLine();
+            echo 'Mail Service Provider: ' . $mailProvider::class . $this->newLine();
             echo '<h2>Attempt #2</h2>';
             $email = Email::create($from, $to, $subject);
             $email->text('My plain text email content');
@@ -101,9 +105,12 @@ Outcome
                 $outcome = false;
                 echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>' . $this->newLine();
             }
+
             echo 'Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
-            echo 'Mail Service Provider: ' . get_class($mailProvider) . $this->newLine();
+            echo 'Mail Service Provider: ' . $mailProvider::class . $this->newLine();
         }
+
+        return 0;
     }
 
     protected function newLine(): string
