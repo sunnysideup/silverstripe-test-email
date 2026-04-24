@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sunnysideup\EmailTest;
 
 use Symfony\Component\Mailer\Envelope;

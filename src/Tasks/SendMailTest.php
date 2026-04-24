@@ -2,6 +2,7 @@
 
 namespace Sunnysideup\EmailTest\Tasks;
 
+use Exception;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Config\Config;
@@ -78,19 +79,20 @@ Outcome
                 echo '<h1>Outcome</h1>';
             }
 
-            $outcome = mail($to, $subject . ' raw mail', $message);
+            $outcome = mail((string) $to, $subject . ' raw mail', (string) $message);
             echo 'PHP mail sent: ' . ($outcome ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
 
             try {
-                $email = new Email($from, $to, $subject . ' silverstripe message', $message);
+                $email = Email::create($from, $to, $subject . ' silverstripe message', $message);
                 $email->sendPlain();
                 $outcome = true;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $outcome = false;
                 echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>' . $this->newLine();
             }
+
             echo 'Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
-            echo 'Mail Service Provider: ' . get_class($mailProvider) . $this->newLine();
+            echo 'Mail Service Provider: ' . $mailProvider::class . $this->newLine();
             echo '<h2>Attempt #2</h2>';
             $email = Email::create($from, $to, $subject);
             $email->text('My plain text email content');
@@ -101,8 +103,9 @@ Outcome
                 $outcome = false;
                 echo '<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>' . $this->newLine();
             }
+
             echo 'Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
-            echo 'Mail Service Provider: ' . get_class($mailProvider) . $this->newLine();
+            echo 'Mail Service Provider: ' . $mailProvider::class . $this->newLine();
         }
     }
 
