@@ -2,6 +2,8 @@
 
 namespace Sunnysideup\EmailTest\Tasks;
 
+use Symfony\Component\Console\Input\InputInterface;
+use SilverStripe\Console\PolyOutput;
 use Exception;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
@@ -19,22 +21,20 @@ use Symfony\Component\Mailer\MailerInterface;
  */
 class SendMailTest extends BuildTask
 {
-    protected $title = 'Test if emails are working';
+    protected string $title = 'Test if emails are working';
 
-    private static $segment = 'testemail';
+    protected static string $commandName = 'testemail';
 
-    public function run($request)
+    protected function execute(InputInterface $input, PolyOutput $output): int
     {
         /** @var Kernel $kernel */
         $kernel = Injector::inst()->get(Kernel::class);
         $kernel->setEnvironment('dev');
-
         $adminEmail = Config::inst()->get(Email::class, 'admin_email');
         if (is_array($adminEmail)) {
             $keys = array_keys($adminEmail);
             $adminEmail = array_pop($keys);
         }
-
         $from = $request->requestVar('from') ?: $adminEmail;
         $to = $request->requestVar('to') ?: $adminEmail;
         $subject = $request->requestVar('subject') ?: 'testing email';
@@ -67,7 +67,6 @@ Change values like this: sake dev/tasks/testemail to=a@b.com from=c@d.com subjec
                 </form>
             ';
         }
-
         if ($request->requestVar('from')) {
             if (Director::is_cli()) {
                 echo '
@@ -107,6 +106,7 @@ Outcome
             echo 'Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY') . $this->newLine();
             echo 'Mail Service Provider: ' . $mailProvider::class . $this->newLine();
         }
+        return 0;
     }
 
     protected function newLine(): string
