@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sunnysideup\EmailTest\Tasks;
 
+use Override;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use SilverStripe\Console\PolyOutput;
+use SilverStripe\PolyExecution\PolyOutput;
 use Exception;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Config\Config;
@@ -26,6 +29,7 @@ class SendMailTest extends BuildTask
 
     protected static string $commandName = 'testemail';
 
+    #[Override]
     public function getOptions(): array
     {
         return [
@@ -74,9 +78,9 @@ class SendMailTest extends BuildTask
             $email = Email::create($from, $to, $subject . ' silverstripe message', $message);
             $email->sendPlain();
             $outcome = true;
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             $outcome = false;
-            $output->writeForHtml('<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>');
+            $output->writeForHtml('<div>Mail send error: <span style="color:red">' . $exception->getMessage() . '</span></div>');
         }
 
         $output->writeln('Silverstripe e-mail #1 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY'));
@@ -84,14 +88,15 @@ class SendMailTest extends BuildTask
 
         // Attempt 3: SilverStripe send() with text()
         $output->writeln('Attempt #2');
+
         $email = Email::create($from, $to, $subject);
         $email->text('My plain text email content');
         try {
             $email->send();
             $outcome = true;
-        } catch (TransportExceptionInterface $e) {
+        } catch (TransportExceptionInterface $transportException) {
             $outcome = false;
-            $output->writeForHtml('<div>Mail send error: <span style="color:red">' . $e->getMessage() . '</span></div>');
+            $output->writeForHtml('<div>Mail send error: <span style="color:red">' . $transportException->getMessage() . '</span></div>');
         }
 
         $output->writeln('Silverstripe e-mail #2 sent: ' . ($outcome === false ? 'NO' : 'CHECK EMAIL TO VERIFY'));
