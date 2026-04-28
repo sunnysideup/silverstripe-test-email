@@ -27,6 +27,8 @@ class SendMailTest extends BuildTask
 {
     protected string $title = 'Test if emails are working';
 
+    protected static string $description = 'Sends a test email using multiple methods (raw PHP mail, SilverStripe Email) to verify your mail configuration.';
+
     protected static string $commandName = 'testemail';
 
     #[Override]
